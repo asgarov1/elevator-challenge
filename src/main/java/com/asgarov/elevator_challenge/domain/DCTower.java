@@ -39,10 +39,8 @@ public class DCTower implements ManageableTower {
         return elevators;
     }
 
-    public Elevator getNextElevator(int destinationFloor) {
-        return Arrays.stream(elevators)
-                .sorted((a, b) -> Boolean.compare(a.isFree(), b.isFree()))
-                .min(Comparator.comparingInt(elevator -> Math.abs(elevator.getCurrentFloor() - destinationFloor)))
-                .orElseThrow();
+    @Override
+    public Elevator getElevator(int number) {
+        return elevators[number];
     }
 }
