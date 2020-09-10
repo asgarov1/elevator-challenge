@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class Task {
+public class Request {
     private int floorFrom;
     private int floorTo;
 }

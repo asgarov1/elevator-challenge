@@ -1,28 +1,34 @@
 package com.asgarov.elevator_challenge;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.asgarov.elevator_challenge.elevator_system.ElevatorSystem;
 
 public class App {
-    public static void main(String[] args) {
-//        new Thread(new CalculateAverage(new double[]{1, 2, 3, 4, 5})).start();
+    public static void main(String[] args) throws InterruptedException {
+        ElevatorSystem elevatorSystem = ElevatorSystem.getInstance();
+        elevatorSystem.start();
 
-        Runnable task1 = () -> System.out.println("Printing zoo inventory");
-        Runnable task2 = () -> {
-            for (int i = 0; i < 3; i++) {
-                System.out.println("Printing record: " + i);
-            }
-        };
+        elevatorSystem.addRequest(0, 35);
+        elevatorSystem.addRequest(55, 10);
+        elevatorSystem.addRequest(20, 18);
+        elevatorSystem.addRequest(0, 16);
+        elevatorSystem.addRequest(2, 19);
+        elevatorSystem.addRequest(21, 39);
+        elevatorSystem.addRequest(46, 47);
+        elevatorSystem.addRequest(44, 33);
+        elevatorSystem.addRequest(20, 38);
+        elevatorSystem.addRequest(1, 12);
+        elevatorSystem.addRequest(0, 55);
+        elevatorSystem.addRequest(3, 23);
+        elevatorSystem.addRequest(0, 35);
+        elevatorSystem.addRequest(55, 10);
+        elevatorSystem.addRequest(20, 18);
+        elevatorSystem.addRequest(0, 16);
 
-        ExecutorService service = Executors.newSingleThreadExecutor();
-        try {
-            System.out.println("===begin===");
-            service.execute(task1);
-            service.execute(task2);
-            service.execute(task1);
-            System.out.println("===end===");
-        } finally {
-            service.shutdown();
-        }
+        Thread.sleep(200);
+        System.out.println("\nLittle pause...\n");
+
+        elevatorSystem.addRequest(1, 2);
+        elevatorSystem.addRequest(5, 20);
+        elevatorSystem.addRequest(22, 19);
     }
 }

@@ -1,60 +1,74 @@
 package com.asgarov.elevator_challenge.elevator_system;
 
-import com.asgarov.elevator_challenge.domain.Task;
+import com.asgarov.elevator_challenge.domain.Elevator;
+import com.asgarov.elevator_challenge.domain.ManageableElevator;
+import com.asgarov.elevator_challenge.domain.Request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 @AllArgsConstructor
+@Slf4j
 public class ElevatorSystem {
-    private ManageableTower manageableTower;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private ConcurrentLinkedQueue<Task> tasksInQueue = new ConcurrentLinkedQueue<>();
-    private Map<Integer, List<Future<?>>> currentTasks = new HashMap<>();
+    private static final int NUMBER_OF_ELEVATORS = 7;
+    private static final int NUMBER_OF_ELEVATOR_SYSTEMS = 1;
+    public static final int DELAY_BETWEEN_NEW_REQUEST_CHECKS_IN_MS = 20;
 
-    public ElevatorSystem(ManageableTower manageableTower) {
-        this.manageableTower = manageableTower;
+    private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private ScheduledExecutorService scheduledService = Executors.newSingleThreadScheduledExecutor();
+    private BlockingQueue<Request> requestsInQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<ManageableElevator> elevators = new LinkedBlockingQueue<>();
+
+    @Getter
+    private static final ElevatorSystem instance = new ElevatorSystem();
+
+    private ElevatorSystem() {
+        initElevators();
     }
 
-    public void addRequest(int floorFrom, int floorTo) {
-        tasksInQueue.add(new Task(floorFrom, floorTo));
-        work();
-    }
-
-    public void work() {
-        while (!tasksInQueue.isEmpty()) {
-            Task task = tasksInQueue.poll();
-            if (task == null) {
-                return;
-            }
-            int elevatorNumber = chooseElevator(task.getFloorTo());
-
-            Future<?> future = executorService.submit(() -> {
-                manageableTower
-                        .getElevator(elevatorNumber)
-                        .transport(task.getFloorFrom(), task.getFloorTo());
-            });
-
-            currentTasks.putIfAbsent(elevatorNumber, Stream.of(future).collect(Collectors.toList()));
-            currentTasks.computeIfPresent(elevatorNumber, (key, values) -> Stream.concat(values.stream(), Stream.of(future)).collect(Collectors.toList()));
+    @SneakyThrows
+    private void initElevators() {
+        for (int i = 0; i < NUMBER_OF_ELEVATORS; i++) {
+            elevators.add(new Elevator(i + 1 + ""));
         }
     }
 
-    public void shutdown() {
-        executorService.shutdown();
+    public void addRequest(int floorFrom, int floorTo) throws InterruptedException {
+        requestsInQueue.add(new Request(floorFrom, floorTo));
     }
 
-    public int chooseElevator(int destinationFloor) {
-//        return Arrays.stream(elevators)
-//                .sorted((a, b) -> Boolean.compare(a.isFree(), b.isFree()))
-//                .min(Comparator.comparingInt(elevator -> Math.abs(elevator.getCurrentFloor() - destinationFloor)))
-//                .orElseThrow();
-        return 1;
+    public void start() {
+        scheduledService.scheduleWithFixedDelay(this::work, 0, DELAY_BETWEEN_NEW_REQUEST_CHECKS_IN_MS, TimeUnit.MILLISECONDS);
+    }
+
+    public void shutdown() {
+        this.shutdown();
+    }
+
+    private void work() {
+        executorService.submit(() -> {
+            try {
+                Request request = requestsInQueue.take();
+                elevators.put(chooseElevator().transport(request));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+    public ManageableElevator chooseElevator() {
+        ManageableElevator elevator = null;
+        try {
+            elevator = elevators.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return elevator;
     }
 
 }
