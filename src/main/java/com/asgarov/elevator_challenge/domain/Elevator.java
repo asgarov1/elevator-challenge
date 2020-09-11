@@ -4,35 +4,44 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-@Getter
 @ToString
 @Slf4j
+@Getter
 public class Elevator implements ManageableElevator {
-    private String name;
-    private AtomicInteger currentFloor = new AtomicInteger(0);
+
+    private final String name;
+    private int currentFloor;
 
     public Elevator(String name) {
         this.name = name;
     }
 
+    /**
+     * Moves the elevator by increasing/decreasing the current floor until detination is reached
+     * @param destinationFloorNumber
+     */
     public void moveTo(int destinationFloorNumber) {
-        while (currentFloor.get() != destinationFloorNumber) {
-            currentFloor.set(currentFloor.get() < destinationFloorNumber ? currentFloor.incrementAndGet() : currentFloor.decrementAndGet());
+        while (currentFloor != destinationFloorNumber) {
+            currentFloor = currentFloor < destinationFloorNumber ? ++currentFloor : --currentFloor;
         }
     }
 
+    /**
+     * Transport method receives the request and first moves the elevator to the floor it was called from
+     * and afterwards moves elevator to the destination floor
+     * @param request
+     * @return instance of itself to be put back into the queue of free elevators once it is done
+     */
     public Elevator transport(Request request) {
         moveTo(request.getFloorFrom());
-        log.info("Elevator " + name + " arrived to floor " + currentFloor.get() + " Please enter!");
+        log.info(name + " was called to floor " + currentFloor + " Please enter!");
         moveTo(request.getFloorTo());
-        log.info("Elevator " + name + " arrived to floor " + currentFloor.get() + " Please exit!");
+        log.info(name + " arrived to floor " + currentFloor + " Please exit!");
         return this;
     }
 
-    public int getCurrentFloor() {
-        return currentFloor.get();
+    @Override
+    public void returnToGroundFloor() {
+        moveTo(0);
     }
-
 }

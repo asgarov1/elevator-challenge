@@ -13,6 +13,19 @@ public class PropertiesReader {
 
     private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
 
+    /**
+     * Convenience method to read default properties file if no other file name was specified
+     * @return
+     */
+    public static Properties getProperties() {
+        return getProperties(DEFAULT_PROPERTIES_FILE);
+    }
+
+    /**
+     * Method to read specified properties file
+     * @param fileName
+     * @return
+     */
     @SneakyThrows
     public static Properties getProperties(String fileName) {
         try (InputStream input = PropertiesReader.class.getClassLoader().getResourceAsStream(fileName)) {
@@ -29,9 +42,5 @@ public class PropertiesReader {
             ex.printStackTrace();
         }
         throw new FileNotFoundException();
-    }
-
-    public static Properties getProperties() {
-        return getProperties(DEFAULT_PROPERTIES_FILE);
     }
 }
