@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
 
-import static com.asgarov.elevator_challenge.system.ElevatorSystenProperties.*;
+import static com.asgarov.elevator_challenge.system.ElevatorSystemProperties.*;
 
 @Getter
 @Slf4j

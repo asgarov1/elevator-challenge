@@ -2,7 +2,7 @@ package com.asgarov.elevator_challenge.system;
 
 import static com.asgarov.elevator_challenge.util.PropertiesReader.getProperties;
 
-public class ElevatorSystenProperties {
+public class ElevatorSystemProperties {
 
     public static final int NUMBER_OF_ELEVATORS;
     public static final int DELAY_BETWEEN_NEW_REQUEST_CHECKS_IN_MS;

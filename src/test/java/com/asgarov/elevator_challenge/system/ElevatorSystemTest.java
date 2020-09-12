@@ -1,6 +1,5 @@
 package com.asgarov.elevator_challenge.system;
 
-import com.asgarov.elevator_challenge.domain.ManageableElevator;
 import com.asgarov.elevator_challenge.domain.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,7 @@ class ElevatorSystemTest {
     ElevatorSystem elevatorSystem = ElevatorSystem.getInstance();
 
     @BeforeEach
-    public void reset(){
+    public void reset() {
         returnElevatorsToGroundFloor();
         System.out.println("\n===New Test===\n");
     }
@@ -70,14 +69,13 @@ class ElevatorSystemTest {
                 .stream()
                 .filter(elevator -> requests.stream()
                         .mapToInt(Request::getFloorTo)
-                        .anyMatch(i -> i == elevator.getCurrentFloor()))
+                        .anyMatch(destinationFloor -> destinationFloor == elevator.getCurrentFloor()))
                 .count();
 
         assertEquals(requests.size(), elevatorsMoved);
     }
 
-    private void returnElevatorsToGroundFloor(){
-        elevatorSystem.getFreeElevators()
-                .forEach(ManageableElevator::returnToGroundFloor);
+    private void returnElevatorsToGroundFloor() {
+        elevatorSystem.getFreeElevators().forEach(elevator -> elevator.transport(new Request(0, 0)));
     }
 }
