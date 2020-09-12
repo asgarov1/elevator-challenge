@@ -24,12 +24,16 @@ public class ElevatorSystem {
         static final ElevatorSystem instance = new ElevatorSystem();
     }
 
-    public static ElevatorSystem getInstance() {
-        return LazyHolder.instance;
-    }
-
     private ElevatorSystem() {
         initElevators();
+    }
+
+    /**
+     * Returns the only instance of ElevatorSystem
+     * @return
+     */
+    public static ElevatorSystem getInstance() {
+        return LazyHolder.instance;
     }
 
     private void initElevators() {
@@ -41,13 +45,8 @@ public class ElevatorSystem {
     /**
      * Adds new request to the queue
      *
-     * @param floorFrom
-     * @param floorTo
+     * @param request
      */
-    public void addRequest(int floorFrom, int floorTo) {
-        requestsInQueue.add(new Request(floorFrom, floorTo));
-    }
-
     public void addRequest(Request request) {
         requestsInQueue.add(request);
     }

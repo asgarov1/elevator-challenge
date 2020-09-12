@@ -3,8 +3,6 @@ package com.asgarov.elevator_challenge.util;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -15,6 +13,7 @@ public class PropertiesReader {
 
     /**
      * Convenience method to read default properties file if no other file name was specified
+     *
      * @return
      */
     public static Properties getProperties() {
@@ -23,24 +22,20 @@ public class PropertiesReader {
 
     /**
      * Method to read specified properties file
+     *
      * @param fileName
      * @return
      */
     @SneakyThrows
     public static Properties getProperties(String fileName) {
         try (InputStream input = PropertiesReader.class.getClassLoader().getResourceAsStream(fileName)) {
-
-            Properties prop = new Properties();
+            Properties properties = new Properties();
             if (input == null) {
                 log.error(fileName + " not found on classpath");
                 throw new IllegalArgumentException();
             }
-            prop.load(input);
-            return prop;
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            properties.load(input);
+            return properties;
         }
-        throw new FileNotFoundException();
     }
 }

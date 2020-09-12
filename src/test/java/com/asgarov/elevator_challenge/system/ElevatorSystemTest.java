@@ -1,5 +1,6 @@
 package com.asgarov.elevator_challenge.system;
 
+import com.asgarov.elevator_challenge.domain.ManageableElevator;
 import com.asgarov.elevator_challenge.domain.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +26,7 @@ class ElevatorSystemTest {
     }
 
     @Test
-    @DisplayName("After requests are performed same amount of elevators should be on the destination floors")
+    @DisplayName("After requests are performed elevators should be on the destination floors")
     void addRequestWorksCorrectly() {
         elevatorSystem.start();
 
@@ -41,14 +42,14 @@ class ElevatorSystemTest {
                 .stream()
                 .filter(elevator -> requests.stream()
                         .mapToInt(Request::getFloorTo)
-                        .anyMatch(i -> i == elevator.getCurrentFloor()))
+                        .anyMatch(destination -> destination == elevator.getCurrentFloor()))
                 .count();
 
         assertEquals(requests.size(), elevatorsMoved);
     }
 
     @Test
-    @DisplayName("Should perform as expected even with requests being added concurrently")
+    @DisplayName("Should perform as expected with requests being submitted concurrently")
     void addRequestWorksCorrectlyInParallel() {
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -76,6 +77,6 @@ class ElevatorSystemTest {
     }
 
     private void returnElevatorsToGroundFloor() {
-        elevatorSystem.getFreeElevators().forEach(elevator -> elevator.transport(new Request(0, 0)));
+        elevatorSystem.getFreeElevators().forEach(ManageableElevator::returnToGroundFloor);
     }
 }
