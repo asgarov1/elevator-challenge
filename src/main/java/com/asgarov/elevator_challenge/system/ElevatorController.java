@@ -9,5 +9,6 @@ public interface ElevatorController {
     void start();
     void shutdown();
     void addRequest(Request request);
+    void returnElevatorsToGroundFloor();
     Collection<ManageableElevator> getFreeElevators();
 }

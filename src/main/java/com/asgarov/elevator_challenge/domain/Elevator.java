@@ -38,11 +38,11 @@ public class Elevator implements ManageableElevator {
      * @return instance of itself to be put back into the queue of free elevators once it is done
      */
     public Elevator transport(Request request) {
-        moveTo(request.getFloorFrom());
-        Direction direction = Direction.calculate(request.getFloorFrom(), request.getFloorTo());
-        log.info(format(ELEVATOR_PICKUP_MESSAGE, name, currentFloor, request.getFloorTo(), direction));
+        moveTo(request.getPickupFloor());
+        Direction direction = Direction.calculate(request.getPickupFloor(), request.getDestination());
+        log.info(format(ELEVATOR_PICKUP_MESSAGE, name, currentFloor, request.getDestination(), direction));
 
-        moveTo(request.getFloorTo());
+        moveTo(request.getDestination());
         log.info(format(ELEVATOR_ARRIVED_MESSAGE, name, currentFloor));
         return this;
     }

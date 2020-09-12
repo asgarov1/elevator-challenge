@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class Request {
-    private int floorFrom;
-    private int floorTo;
+    private int pickupFloor;
+    private int destination;
 }

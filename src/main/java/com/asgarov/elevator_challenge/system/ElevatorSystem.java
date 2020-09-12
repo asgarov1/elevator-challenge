@@ -3,15 +3,15 @@ package com.asgarov.elevator_challenge.system;
 import com.asgarov.elevator_challenge.domain.Elevator;
 import com.asgarov.elevator_challenge.domain.ManageableElevator;
 import com.asgarov.elevator_challenge.domain.Request;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import static com.asgarov.elevator_challenge.system.ElevatorSystemProperties.*;
 
-@Getter
 @Slf4j
 public class ElevatorSystem implements ElevatorController {
 
@@ -55,7 +55,6 @@ public class ElevatorSystem implements ElevatorController {
         requestsInQueue.add(request);
     }
 
-
     /**
      * Starts the system by scheduling for elevators to perform on the queue of requests with fixed delay
      */
@@ -95,5 +94,25 @@ public class ElevatorSystem implements ElevatorController {
             ManageableElevator elevator = freeElevators.take();
             executorService.submit(() -> freeElevators.offer(elevator.transport(request)));
         }
+    }
+
+    /**
+     * Returns all free elevators to the ground floor
+     */
+    @Override
+    public void returnElevatorsToGroundFloor() {
+        freeElevators.forEach(ManageableElevator::returnToGroundFloor);
+    }
+
+
+    /**
+     * Getter for the collection of free elevators
+     * @return defensive copy of the unmodifiable list of elevators
+     */
+    @Override
+    public Collection<ManageableElevator> getFreeElevators() {
+        return freeElevators.stream()
+                .map(elevator -> new Elevator(elevator.getName()))
+                .collect(Collectors.toUnmodifiableList());
     }
 }
