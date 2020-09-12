@@ -1,8 +1,8 @@
 package com.asgarov.elevator_challenge.domain;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,6 +13,7 @@ class ElevatorTest {
     public static final int MAX_FLOOR = 55;
 
     @Test
+    @DisplayName("Method moveTo() should work as expected")
     void moveTo() {
         Elevator elevator = new Elevator("Test elevator");
 
@@ -23,7 +24,8 @@ class ElevatorTest {
     }
 
     @Test
-    void transport() throws FileNotFoundException {
+    @DisplayName("Method transport() should work as expected")
+    void transport() {
         Elevator elevator = new Elevator("Test elevator");
 
         int floorFrom = ThreadLocalRandom.current().nextInt(1, MAX_FLOOR + 1);
@@ -35,6 +37,7 @@ class ElevatorTest {
     }
 
     @Test
+    @DisplayName("Method returnToGroundFloor() should work as expected")
     void returnToGroundFloor() {
         Elevator elevator = new Elevator("Test elevator");
 

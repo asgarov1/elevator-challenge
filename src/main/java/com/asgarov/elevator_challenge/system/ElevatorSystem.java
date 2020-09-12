@@ -29,13 +29,17 @@ public class ElevatorSystem {
     }
 
     /**
-     * Returns the only instance of ElevatorSystem
-     * @return
+     * Singleton getter
+     *
+     * @return only instance of ElevatorSystem
      */
     public static ElevatorSystem getInstance() {
         return LazyHolder.instance;
     }
 
+    /**
+     * Initializes the elevators to be used
+     */
     private void initElevators() {
         for (int i = 0; i < NUMBER_OF_ELEVATORS; i++) {
             freeElevators.add(new Elevator("L" + (i + 1)));
@@ -56,11 +60,12 @@ public class ElevatorSystem {
      * Starts the system by scheduling for elevators to perform on the queue of requests with fixed delay
      */
     public void start() {
-        if(scheduledService.isShutdown()){
+        if (scheduledService.isShutdown()) {
             scheduledService = Executors.newSingleThreadScheduledExecutor();
             executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         }
         scheduledService.scheduleWithFixedDelay(this::work, 0, DELAY_BETWEEN_NEW_REQUEST_CHECKS_IN_MS, TimeUnit.MILLISECONDS);
+        log.info("ElevatorSystem has started...");
     }
 
     /**
@@ -72,6 +77,7 @@ public class ElevatorSystem {
             if (requestsInQueue.isEmpty()) {
                 scheduledService.shutdown();
                 executorService.shutdown();
+                log.info("ElevatorSystem has shutdown.\n");
                 break;
             }
             Thread.sleep(SHUTDOWN_ATTEMPTS_DELAY);
@@ -80,7 +86,7 @@ public class ElevatorSystem {
 
     /**
      * For every request from the queue picks one elevator and assigns it to work on a separate thread
-     * Elevator is taken out from the queue of read elevators and returned back only after it has finished work
+     * Elevator is taken out from the queue of free elevators and returned back only after it has finished work
      */
     @SneakyThrows
     private void work() {

@@ -1,10 +1,8 @@
 package com.asgarov.elevator_challenge.domain;
 
 import lombok.Getter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-@ToString
 @Slf4j
 @Getter
 public class Elevator implements ManageableElevator {

@@ -14,7 +14,7 @@ public class PropertiesReader {
     /**
      * Convenience method to read default properties file if no other file name was specified
      *
-     * @return
+     * @return Properties
      */
     public static Properties getProperties() {
         return getProperties(DEFAULT_PROPERTIES_FILE);
@@ -23,8 +23,8 @@ public class PropertiesReader {
     /**
      * Method to read specified properties file
      *
-     * @param fileName
-     * @return
+     * @param fileName is the file that will be looked for
+     * @return Properties
      */
     @SneakyThrows
     public static Properties getProperties(String fileName) {
