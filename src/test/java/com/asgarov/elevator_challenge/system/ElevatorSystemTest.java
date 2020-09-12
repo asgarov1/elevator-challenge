@@ -24,26 +24,26 @@ class ElevatorSystemTest {
      */
     public static final int AMOUNT_OF_TIMES = 10;
 
-    ElevatorSystem elevatorSystem = ElevatorSystem.getInstance();
+    ElevatorController elevatorController = ElevatorSystem.getInstance();
 
     @BeforeEach
     public void reset() {
-        elevatorSystem.getFreeElevators().forEach(ManageableElevator::returnToGroundFloor);
+        elevatorController.getFreeElevators().forEach(ManageableElevator::returnToGroundFloor);
         log.info("===New Test===");
     }
 
     @RepeatedTest(AMOUNT_OF_TIMES)
     @DisplayName("After requests are performed elevators should be on the destination floors")
     void addRequestWorksCorrectly() {
-        elevatorSystem.start();
+        elevatorController.start();
         List<Request> requests = Stream.of(new Request(0, 35),
-                new Request(55, 10),
-                new Request(20, 18),
+                new Request(55, 0),
+                new Request(20, 0),
                 new Request(45, 0))
                 .collect(Collectors.toList());
 
-        requests.forEach(elevatorSystem::addRequest);
-        elevatorSystem.shutdown();
+        requests.forEach(elevatorController::addRequest);
+        elevatorController.shutdown();
 
         long elevatorsOnDestinationFloors = countElevatorsOnDestinationFloors(requests);
         assertTrue(elevatorsOnDestinationFloors >= requests.size());
@@ -53,19 +53,20 @@ class ElevatorSystemTest {
     @DisplayName("Should perform as expected with requests being submitted concurrently")
     void addRequestWorksCorrectlyInParallel() {
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-        elevatorSystem.start();
+        elevatorController.start();
 
         List<Request> requests = Stream.of(new Request(0, 35),
-                new Request(55, 10),
-                new Request(20, 18),
-                new Request(2, 4),
-                new Request(0, 5))
+                new Request(55, 0),
+                new Request(0, 18),
+                new Request(2, 0),
+                new Request(0, 5),
+                new Request(0, 26),
+                new Request(0, 45))
                 .collect(Collectors.toList());
 
-        requests.forEach(request -> executorService.submit(() -> elevatorSystem.addRequest(request)));
+        requests.forEach(request -> executorService.submit(() -> elevatorController.addRequest(request)));
 
-        elevatorSystem.shutdown();
+        elevatorController.shutdown();
 
         long elevatorsOnDestinationFloors = countElevatorsOnDestinationFloors(requests);
         assertEquals(requests.size(), elevatorsOnDestinationFloors);
@@ -78,7 +79,7 @@ class ElevatorSystemTest {
      * @return long amount of elevators
      */
     private long countElevatorsOnDestinationFloors(List<Request> requests) {
-        return elevatorSystem.getFreeElevators()
+        return elevatorController.getFreeElevators()
                 .stream()
                 .filter(elevator -> requests.stream()
                         .anyMatch(request -> request.getFloorTo() == elevator.getCurrentFloor()))

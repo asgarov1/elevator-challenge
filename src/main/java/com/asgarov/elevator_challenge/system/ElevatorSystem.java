@@ -13,7 +13,7 @@ import static com.asgarov.elevator_challenge.system.ElevatorSystemProperties.*;
 
 @Getter
 @Slf4j
-public class ElevatorSystem {
+public class ElevatorSystem implements ElevatorController {
 
     private final BlockingQueue<Request> requestsInQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<ManageableElevator> freeElevators = new LinkedBlockingQueue<>();
@@ -49,7 +49,7 @@ public class ElevatorSystem {
     /**
      * Adds new request to the queue
      *
-     * @param request
+     * @param request provides information regarding pickup and destination floors
      */
     public void addRequest(Request request) {
         requestsInQueue.add(request);
