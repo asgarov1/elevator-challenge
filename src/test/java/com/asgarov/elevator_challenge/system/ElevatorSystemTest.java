@@ -9,8 +9,6 @@ import org.junit.jupiter.api.RepeatedTest;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,7 +19,7 @@ class ElevatorSystemTest {
     /**
      * I kept the amount low so that you didn't have to wait too long :)
      */
-    public static final int AMOUNT_OF_TIMES = 10;
+    public static final int NUMBER_OF_REPETITIONS = 10;
 
     ElevatorController elevatorController = ElevatorSystem.getInstance();
 
@@ -31,15 +29,14 @@ class ElevatorSystemTest {
         log.info("===New Test===");
     }
 
-    @RepeatedTest(AMOUNT_OF_TIMES)
+    @RepeatedTest(NUMBER_OF_REPETITIONS)
     @DisplayName("After requests are performed elevators should be on the destination floors")
     void addRequestWorksCorrectly() {
         elevatorController.start();
-        List<Request> requests = Stream.of(new Request(0, 35),
+        List<Request> requests = List.of(new Request(0, 35),
                 new Request(55, 0),
                 new Request(20, 0),
-                new Request(45, 0))
-                .collect(Collectors.toList());
+                new Request(45, 0));
 
         requests.forEach(elevatorController::addRequest);
         elevatorController.shutdown();
@@ -48,20 +45,19 @@ class ElevatorSystemTest {
         assertTrue(elevatorsOnDestinationFloors >= requests.size());
     }
 
-    @RepeatedTest(AMOUNT_OF_TIMES)
+    @RepeatedTest(NUMBER_OF_REPETITIONS)
     @DisplayName("Should perform as expected with requests being submitted concurrently")
     void addRequestWorksCorrectlyInParallel() {
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         elevatorController.start();
 
-        List<Request> requests = Stream.of(new Request(0, 35),
+        List<Request> requests = List.of(new Request(0, 35),
                 new Request(55, 0),
                 new Request(0, 18),
                 new Request(2, 0),
                 new Request(0, 5),
                 new Request(0, 26),
-                new Request(0, 45))
-                .collect(Collectors.toList());
+                new Request(0, 45));
 
         requests.forEach(request -> executorService.submit(() -> elevatorController.addRequest(request)));
 
