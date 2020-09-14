@@ -3,6 +3,7 @@ package com.asgarov.elevator_challenge.util;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -32,7 +33,7 @@ public class PropertiesReader {
             Properties properties = new Properties();
             if (input == null) {
                 log.error(fileName + " not found on classpath");
-                throw new IllegalArgumentException();
+                throw new FileNotFoundException();
             }
             properties.load(input);
             return properties;
